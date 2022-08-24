@@ -61,8 +61,3 @@ eFGPerc <- zones %>%
 head(eFGPerc)
 ```
 
-## Create the Link
-
-```{r}
-createLink(link = "R Markdown File", "Lubelfeld_Thunder_Technical_Assessment")
-```
