@@ -1,0 +1,68 @@
+---
+title: "Thunder_Technical_Assessment"
+author: "Danny Lubelfeld"
+date: "2022-08-23"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyr)     
+library(ggplot2)   
+library(readr) 
+library(dplyr)
+library(readxl)
+library(factoextra)
+library(caret)   ## For model fitting and evaluation
+library(visreg)  ## For visualizing regression models
+library(plotROC) ## For constructing ROC curves
+library(mgcv)    ## For fitting GAM models
+library(kernlab) ## Contains an example dataset
+library(glmnet)  ## For fitting regularized models
+require(leaps)
+```
+
+## Read in CSV
+
+```{r}
+shots <- read.csv("C:/Users/Admin/Desktop/Job Search/shots_data.csv")
+
+```
+
+## Determining Shot Zone and eFGPerc
+
+```{r}
+zones <- mutate(shots, shot_zone = ifelse(abs(shots$x)>=22 & shots$y<=7.8, "C3", 
+                                          ifelse(shots$y>7.8 & sqrt((x*x)+(y*y))>23.75, "NC3", "2PT")))
+
+zones <- mutate(zones, eFGPerc = ifelse(shot_zone == "2PT", fgmade, (1.5*fgmade)))
+```
+
+## Shot Distribution By Zone per Team
+
+```{r}
+shotDist <- zones %>%
+  group_by(team, shot_zone) %>%
+  summarise(cnt = n()) %>%
+  mutate(shotFreq = round(cnt / sum(cnt), 3))
+
+head(shotDist)
+```
+
+## eFG% By Zone per Team
+
+```{r}
+eFGPerc <- zones %>%
+  group_by(team, shot_zone) %>%
+  summarise_at(vars(eFGPerc), list(eFGPerc = mean))
+
+head(eFGPerc)
+```
+
+## Create the Link
+
+```{r}
+createLink(link = "R Markdown File", "Lubelfeld_Thunder_Technical_Assessment")
+```
